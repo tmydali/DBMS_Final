@@ -15,7 +15,7 @@ X市規劃要推行不動產履歷系統，讓市民能夠即時上網查詢所�
 - 建物可能會鄰近某些捷運站，此時會需要記錄下來，鄰近的定義為半徑800公尺內
 
 ### ER Diagram
-![ER Diagram]()
+![ER Diagram](image/er_model.png)
 
 ### Relation Schema (已進行第三正規化)
-![Relation Schema]()
+![Relation Schema](image/relation_schema.png)
