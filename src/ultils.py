@@ -17,6 +17,8 @@ def processInstr(json):
         result['data'], result['method'] = getAllLandUse()
     elif json['method'] == 'get-building-data':
         result['data'], result['method'] = getBuildingData(json['data'])
+    elif json['method'] == 'get-trade-data':
+        result['data'], result['method'] = getTradeData(json['data'])
     
     return result
 
@@ -77,5 +79,37 @@ def getBuildingData(data):
             AND BUILDING.Land_use = CITY_PLANNING.Land_use
         );
         '''
-    print(instr)
+    return directQuery(instr)
+
+def getTradeData(data):
+    instr = ''
+    func = ''
+    if data == '近三年各區交易統計':
+        instr = '''
+                SELECT LOT.District, COUNT(*), MAX(Price), MIN(Price), AVG(Price) FROM TRADE
+                INNER JOIN BUILDING
+                ON TRADE.BID = BUILDING.BID
+                INNER JOIN LOT
+                ON BUILDING.LID = LOT.LID
+                WHERE Date >= "2019-01-01" GROUP BY LOT.District;
+                '''
+    elif data == '總交易額大戶':
+        instr = '''
+            SELECT HOLDER.*, buy_price+sell_price AS Total_Transaction
+            FROM (
+                SELECT PID AS Buyer, SUM(TRADE.Price) as buy_price  FROM HOLDER
+                INNER JOIN TRADE
+                ON HOLDER.PID=TRADE.PID_buyer
+                GROUP BY PID
+            ) a, 
+            (
+                SELECT PID AS Seller, SUM(TRADE.Price) AS sell_price FROM HOLDER
+                INNER JOIN TRADE
+                ON HOLDER.PID=TRADE.PID_seller
+                GROUP BY PID
+            ) b
+            INNER JOIN HOLDER ON HOLDER.PID = a.Buyer
+            WHERE a.Buyer=b.Seller AND Total_Transaction >= 3000
+            ORDER BY Total_Transaction DESC;
+            '''
     return directQuery(instr)
