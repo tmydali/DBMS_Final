@@ -10,49 +10,109 @@
         <script type="module" src="{{ url_for('static', filename='index.js') }}"></script>
     </head>
     <body>
-        <div class="container" id="pannel">
+        <div class="container mt-3" id="pannel">
             <div class="row">
                 <div class="col">Title</div>
             </div>
             <div class="row">
-                <div class="col">Buttons</div>
-            </div>
-            <div class="row align-items-center">
-                <div class="col text-center">
-                    Query By
-                    SQL
-                </div>
-                <div class="col-11 form-group">
-                    <textarea class="form-control" id="SQLTextArea" rows="4"></textarea>
-                </div>
-            </div>
-            <div class="row">
                 <div class="col">
-                    <button type="submit" class="btn btn-light">Query</button>
+                    <ul class="nav nav-tabs">
+                        <li class="active nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#nav-edit">查詢/編輯</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#nav-advanced">進階查詢</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#nav-sql">SQL</a>
+                        </li>
+                      </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane show active" id="nav-edit">
+                            <div class="container mt-3">
+                                <div class="row align-items-center h-100">
+                                    <div class="col-2">
+                                        <div class="btn-group">
+                                            <button type="button" id="table-dropdown-btn" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">
+                                                選取資料表
+                                            </button>
+                                            <div id="table-dropdown" class="dropdown-menu"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-2">
+                                        <button class="btn btn-outline-danger btn-sm">新增</button>
+                                        <button class="btn btn-outline-danger btn-sm">修改</button>
+                                        <button class="btn btn-outline-danger btn-sm">刪除</button>
+                                    </div> 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane " id="nav-advanced">
+                            <div class="container mt-3">
+                                <div class="row align-items-center h-100 p-2">
+                                    <div class="col-2 h4">查詢建物</div>
+                                    <div class="col-1">
+                                        <div id="lot-in-btngroup" class="btn-group btn-group-toggle" data-toggle="buttons">
+                                            <label class="btn btn-outline-secondary btn-sm active">
+                                                <input type="radio" name="lot-in-ops" value="0" autocomplete="off" checked> 在
+                                            </label>
+                                            <label class="btn btn-outline-secondary btn-sm">
+                                                <input type="radio" name="lot-in-ops" value="1" autocomplete="off"> 不在
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-2">
+                                        <div class="btn-group">
+                                            <button type="button" id="lot-dropdown-district" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">
+                                                所有行政區
+                                            </button>
+                                            <div id="lot-dropdown-district-ops" class="dropdown-menu"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-2 d-flex justify-content-center" style="border-left: 3px lightslategray solid;border-right: 3px lightslategray solid;">
+                                        <div id="lot-near-metro" class="btn-group-toggle" data-toggle="buttons">
+                                            <label class="btn btn-outline-secondary">
+                                                <input type="checkbox" autocomplete="off"> 鄰近捷運站
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-1 mx-4">
+                                        <div id="lot-belong-btngroup" class="btn-group btn-group-toggle" data-toggle="buttons">
+                                            <label class="btn btn-outline-secondary btn-sm active">
+                                                <input type="radio" name="lot-belong-ops" value="0" autocomplete="off" checked> 屬於
+                                            </label>
+                                            <label class="btn btn-outline-secondary btn-sm">
+                                                <input type="radio" name="lot-belong-ops" value="1" autocomplete="off"> 不屬於
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-2">
+                                        <div class="btn-group">
+                                            <button type="button" id="lot-dropdown-plan" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">
+                                                所有土地利用
+                                            </button>
+                                            <div id="lot-dropdown-plan-ops" class="dropdown-menu"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-1">
+                                        <button type="button" id="query-building-btn" class="btn btn-outline-primary">查詢</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="nav-sql">
+                            <div class="input-group">
+                                <textarea class="form-control" id="SQLTextArea" rows="4">select * from holder</textarea>
+                                <button class="btn btn-outline-secondary" type="button" id="SQL-btn">Query By SQL</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
         </div>
         <div class="container mt-3" id="show-window">
-            <div class="alert alert-primary" role="alert">
-                Query Result Here!
-            </div>
-            <table class="table">
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">First</th>
-                    <th scope="col">Last</th>
-                    <th scope="col">Handle</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
-                  </tr>
-            </table>
+            <div class="alert alert-secondary" id="result-alert" role="alert">查詢結果</div>
+            <table class="table" id="show-table"></table>
         </div>
     </body>
 </html>
