@@ -109,15 +109,17 @@ def getTradeData(data):
                 INNER JOIN TRADE
                 ON HOLDER.PID=TRADE.PID_buyer
                 GROUP BY PID
+                HAVING SUM(TRADE.Price) >= 1000
             ) a, 
             (
                 SELECT PID AS Seller, SUM(TRADE.Price) AS sell_price FROM HOLDER
                 INNER JOIN TRADE
                 ON HOLDER.PID=TRADE.PID_seller
                 GROUP BY PID
+                HAVING SUM(TRADE.Price) >= 1000
             ) b
             INNER JOIN HOLDER ON HOLDER.PID = a.Buyer
-            WHERE a.Buyer=b.Seller AND Total_Transaction >= 3000
+            WHERE a.Buyer=b.Seller
             ORDER BY Total_Transaction DESC;
             '''
     return directQuery(instr)
