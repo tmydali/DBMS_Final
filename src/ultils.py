@@ -35,11 +35,15 @@ def directQuery(instr):
     cur = conn.cursor()
     try:
         query = cur.execute(instr)
-        des = cur.description
-        colname = [x[0] for x in des]
-        colname[0] = '#' if colname[0] == 'rowid' else colname[0]
-        data = query.fetchall()
-        data.insert(0, colname)
+        if(instr.split()[0].upper() == 'SELECT'):
+            des = cur.description
+            colname = [x[0] for x in des]
+            colname[0] = '#' if colname[0] == 'rowid' else colname[0]
+            data = query.fetchall()
+            data.insert(0, colname)
+        else:   # Data manipulate
+            conn.commit()
+            data = None
         return data, 'success'
     except Exception as e:
         print(e)

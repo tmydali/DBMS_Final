@@ -296,24 +296,27 @@ function handle_result(obj) {
     let method = obj.method;
     let data = obj.data;
     if(method == 'success') {
-        let html = '';
-        // Header
-        html += '<thead><tr>';
-        for(let header of data[0]) {
-            html += `<th scope="row">${header}</th>`;
-        }
-        html += '</tr></thead>';
-        // Data
-        html += '<tbody>';
-        for(let row of data.slice(1)) {
-            html += '<tr>';
-            for(let item of row) {
-                html += `<td>${item}</th>`;
+        try{
+            // Header
+            let html = '';
+            html += '<thead><tr>';
+            for(let header of data[0]) {
+                html += `<th scope="row">${header}</th>`;
             }
-            html += '</tr>';
+            html += '</tr></thead>';
+            // Data
+            html += '<tbody>';
+            for(let row of data.slice(1)) {
+                html += '<tr>';
+                for(let item of row) {
+                    html += `<td>${item}</th>`;
+                }
+                html += '</tr>';
+            }
+            html += '</tbody>';
+            $('#show-table').html(html);
         }
-        html += '</tbody>';
-        $('#show-table').html(html);
+        catch(err){;}
         $('#result-alert').attr('class', 'alert alert-success').html("Query success!").show();
     }
     else if (method == 'fail') {
