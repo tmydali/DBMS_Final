@@ -19,6 +19,13 @@ def processInstr(json):
         result['data'], result['method'] = getBuildingData(json['data'])
     elif json['method'] == 'get-trade-data':
         result['data'], result['method'] = getTradeData(json['data'])
+    elif json['method'] == 'insert-into':
+        result['data'], result['method'] = insertInto(json['data'])
+    elif json['method'] == 'update':
+        result['data'], result['method'] = update(json['data'])
+    elif json['method'] == 'delete':
+        result['data'], result['method'] = delete(json['data'])
+
     
     return result
 
@@ -30,10 +37,12 @@ def directQuery(instr):
         query = cur.execute(instr)
         des = cur.description
         colname = [x[0] for x in des]
+        colname[0] = '#' if colname[0] == 'rowid' else colname[0]
         data = query.fetchall()
         data.insert(0, colname)
         return data, 'success'
     except Exception as e:
+        print(e)
         return 'error', 'fail'
 
 def getTables():
@@ -48,7 +57,7 @@ def getTables():
         return 'error', 'fail'
 
 def getTableData(name):
-    instr = f'SELECT * FROM {name};'
+    instr = f'SELECT rowid, * FROM {name};'
     return directQuery(instr)
 
 def getAllDistricts():
@@ -83,7 +92,6 @@ def getBuildingData(data):
 
 def getTradeData(data):
     instr = ''
-    func = ''
     if data == '近三年各區交易統計':
         instr = '''
                 SELECT LOT.District, COUNT(*), MAX(Price), MIN(Price), AVG(Price) FROM TRADE
@@ -113,3 +121,71 @@ def getTradeData(data):
             ORDER BY Total_Transaction DESC;
             '''
     return directQuery(instr)
+
+def insertInto(data):
+    table = data['table']
+    raw = data['raw']
+    values = 'VALUES ('
+    for v in raw:
+        values += f'"{v}",'
+    values = values[:-1]
+    values += ')'
+
+    instr = f'INSERT INTO {table} {values};'
+    print(instr)
+    
+    return insert_op(instr)
+
+def insert_op(instr):
+    dbfile = 'static/real_estate.db'
+    conn = sqlite3.connect(dbfile)
+    cur = conn.cursor()
+    try:
+        query = cur.execute(instr)
+        data = query.fetchall()
+        conn.commit()
+        return data, 'success'
+    except Exception as e:
+        print(e)
+        return 'error', 'fail'
+
+def update(data):
+    dbfile = 'static/real_estate.db'
+    conn = sqlite3.connect(dbfile)
+    cur = conn.cursor()
+    table = data['table']
+    raw = data['raw']
+    index = data['index']
+    try:
+        instr = f'SELECT * FROM {table};'
+        cur.execute(instr)
+        des = cur.description
+        colname = [x[0] for x in des]
+        sets = 'SET '
+        for i in range(len(colname)):
+            sets += f'{colname[i]}="{raw[i]}",'
+        sets = sets[:-1]
+        instr = f'UPDATE {table} {sets} WHERE rowid={index};'
+        query = cur.execute(instr)
+        data = query.fetchall()
+        conn.commit()
+        return data, 'success'
+    except Exception as e:
+        print(e)
+        return 'error', 'fail'
+
+def delete(data):
+    dbfile = 'static/real_estate.db'
+    conn = sqlite3.connect(dbfile)
+    cur = conn.cursor()
+    table = data['table']
+    index = data['index']
+    try:
+        instr = f'DELETE FROM {table} WHERE rowid={index};'
+        query = cur.execute(instr)
+        data = query.fetchall()
+        conn.commit()
+        return data, 'success'
+    except Exception as e:
+        print(e)
+        return 'error', 'fail'
